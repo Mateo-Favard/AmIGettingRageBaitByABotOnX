@@ -74,7 +74,7 @@ describe('useAnalysis', () => {
     await analyzeByHandle('testuser')
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'http://localhost:8000/api/v1/analyze',
+      '/api/analyze',
       {
         method: 'POST',
         body: { url: 'https://x.com/testuser' },

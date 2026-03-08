@@ -9,6 +9,7 @@
       :key="signal.key"
       :score="signal.value"
       :label="signal.label"
+      :tooltip="signal.tooltip"
     />
   </div>
 </template>
@@ -21,9 +22,29 @@ const props = defineProps<{
 }>()
 
 const signals = computed(() => [
-  { key: 'ai_content', label: 'Contenu IA', value: props.scores.ai_content_score },
-  { key: 'behavioral', label: 'Comportement', value: props.scores.behavioral_score },
-  { key: 'sentiment', label: 'Sentiment', value: props.scores.sentiment_score },
-  { key: 'opportunism', label: 'Opportunisme', value: props.scores.opportunism_score },
+  {
+    key: 'ai_content',
+    label: 'Contenu IA',
+    value: props.scores.ai_content_score,
+    tooltip: 'Détecte les tweets au style mécanique ou généré — vocabulaire répétitif, formulations stéréotypées, cadence de publication anormale.',
+  },
+  {
+    key: 'behavioral',
+    label: 'Comportement',
+    value: props.scores.behavioral_score,
+    tooltip: 'Analyse les patterns du compte — ratio followers/following suspect, volume de tweets excessif, compte récent avec forte activité.',
+  },
+  {
+    key: 'sentiment',
+    label: 'Sentiment',
+    value: props.scores.sentiment_score,
+    tooltip: 'Mesure la proportion de tweets négatifs ou alarmistes — ton catastrophiste, vocabulaire émotionnel intense, appels à la peur ou à la colère.',
+  },
+  {
+    key: 'opportunism',
+    label: 'Opportunisme',
+    value: props.scores.opportunism_score,
+    tooltip: 'Combine trois signaux : surreprésentation de tweets "problème", sauts thématiques fréquents entre les sujets, et surf systématique sur les tendances du moment.',
+  },
 ])
 </script>

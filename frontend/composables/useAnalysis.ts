@@ -32,7 +32,6 @@ export interface AnalysisState {
 }
 
 export function useAnalysis() {
-  const config = useRuntimeConfig()
   const state = reactive<AnalysisState>({
     data: null,
     loading: false,
@@ -46,7 +45,7 @@ export function useAnalysis() {
 
     try {
       const result = await $fetch<AnalyzeResponse>(
-        `${config.public.apiBaseUrl}/api/v1/analyze`,
+        `/api/analyze`,
         {
           method: 'POST',
           body: { url: twitterUrl },

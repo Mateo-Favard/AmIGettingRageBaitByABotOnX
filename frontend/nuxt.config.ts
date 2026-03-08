@@ -9,10 +9,8 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   runtimeConfig: {
-    apiSecret: '',
-    public: {
-      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
-    },
+    apiInternalUrl: process.env.NUXT_API_INTERNAL_URL || 'http://localhost:8000',
+    public: {},
   },
 
   app: {
