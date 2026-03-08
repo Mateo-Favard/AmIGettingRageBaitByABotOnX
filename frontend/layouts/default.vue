@@ -23,6 +23,13 @@
         >
           GitHub
         </a>
+        &mdash;
+        <NuxtLink
+          to="/legal"
+          class="text-zinc-400 hover:text-zinc-200 transition-colors"
+        >
+          Mentions l&eacute;gales
+        </NuxtLink>
       </p>
     </footer>
   </div>

@@ -54,7 +54,7 @@ class AnalysisService:
 
         # 2. Fetch Twitter data
         profile = await self._twitter.fetch_profile(handle)
-        tweets = await self._twitter.fetch_recent_tweets(handle)
+        tweets = await self._twitter.fetch_recent_tweets(handle, count=10)
 
         # 3. Upsert account
         account_id = await self._repo.upsert(profile)

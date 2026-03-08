@@ -24,7 +24,12 @@ async def analyze_account(
     handle = body.handle
     result, cached = await service.analyze(handle, force=force)
 
-    profile = await service._twitter.fetch_profile(handle)
+    # Profile from DB (saved during analysis) — avoids extra API call
+    db_row = await service._repo.get_by_handle(handle)
+    if db_row is not None:
+        _, profile = db_row
+    else:
+        profile = await service._twitter.fetch_profile(handle)
 
     return AnalyzeResponse(
         handle=result.handle,

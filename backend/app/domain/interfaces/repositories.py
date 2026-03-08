@@ -32,3 +32,6 @@ class AccountRepositoryInterface(ABC):
 
     @abstractmethod
     async def get_latest_analysis(self, handle: str) -> AnalysisResultData | None: ...
+
+    @abstractmethod
+    async def delete_by_handle(self, handle: str) -> bool: ...

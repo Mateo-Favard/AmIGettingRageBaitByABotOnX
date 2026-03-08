@@ -1,3 +1,4 @@
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -13,6 +14,18 @@ from app.core.middleware import RequestIDMiddleware, SecurityHeadersMiddleware
 from app.core.security import limiter
 
 
+def _configure_logging(*, production: bool) -> None:
+    if production:
+        from app.core.logging import JSONFormatter
+
+        handler = logging.StreamHandler()
+        handler.setFormatter(JSONFormatter())
+        logging.root.handlers = [handler]
+        logging.root.setLevel(logging.INFO)
+    else:
+        logging.basicConfig(level=logging.DEBUG)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
@@ -22,6 +35,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    _configure_logging(production=settings.is_production)
 
     app = FastAPI(
         title="Am I Getting Rage Bait by a Bot on X?",

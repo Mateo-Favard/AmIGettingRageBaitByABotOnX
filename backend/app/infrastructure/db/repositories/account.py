@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 if TYPE_CHECKING:
@@ -120,6 +120,19 @@ class AccountRepository(AccountRepositoryInterface):
         if row is None:
             return None
         return _to_domain_analysis(row, handle)
+
+    async def delete_by_handle(self, handle: str) -> bool:
+        stmt = select(TwitterAccount.id).where(TwitterAccount.handle == handle)
+        result = await self._session.execute(stmt)
+        account_id = result.scalar_one_or_none()
+        if account_id is None:
+            return False
+
+        await self._session.execute(
+            delete(TwitterAccount).where(TwitterAccount.id == account_id)
+        )
+        await self._session.commit()
+        return True
 
 
 def _to_domain_profile(row: TwitterAccount) -> TwitterProfile:
