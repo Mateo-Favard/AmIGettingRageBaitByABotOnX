@@ -48,11 +48,11 @@ class TwitterAPIClient(TwitterClientInterface):
             handle=handle,
             display_name=user.get("name", ""),
             bio=user.get("description", ""),
-            profile_image_url=user.get("profile_image_url_https", ""),
-            followers_count=user.get("followers_count", 0),
-            following_count=user.get("friends_count", 0),
-            tweets_count=user.get("statuses_count", 0),
-            account_created_at=_parse_datetime(user.get("created_at")),
+            profile_image_url=user.get("profilePicture", user.get("profile_image_url_https", "")),
+            followers_count=user.get("followers", user.get("followers_count", 0)),
+            following_count=user.get("following", user.get("friends_count", 0)),
+            tweets_count=user.get("statusesCount", user.get("statuses_count", 0)),
+            account_created_at=_parse_datetime(user.get("createdAt", user.get("created_at"))),
         )
 
     async def fetch_recent_tweets(
@@ -63,8 +63,12 @@ class TwitterAPIClient(TwitterClientInterface):
             f"{_BASE_URL}/user/last_tweets",
             params={"userName": handle, "count": str(count)},
         )
-        tweets_raw = data.get("data", [])
-        if not isinstance(tweets_raw, list):
+        raw_data = data.get("data", [])
+        if isinstance(raw_data, dict):
+            tweets_raw = raw_data.get("tweets", [])
+        elif isinstance(raw_data, list):
+            tweets_raw = raw_data
+        else:
             tweets_raw = []
         return [_parse_tweet(t) for t in tweets_raw]
 
@@ -139,12 +143,12 @@ def _parse_datetime(value: str | None) -> datetime | None:
 
 
 def _parse_tweet(raw: dict[str, Any]) -> TweetData:
-    posted_at = _parse_datetime(raw.get("created_at")) or datetime.now(tz=UTC)
+    posted_at = _parse_datetime(raw.get("createdAt", raw.get("created_at"))) or datetime.now(tz=UTC)
     return TweetData(
-        twitter_id=str(raw.get("id_str", raw.get("id", ""))),
-        content=raw.get("full_text", raw.get("text", "")),
+        twitter_id=str(raw.get("id", raw.get("id_str", ""))),
+        content=raw.get("text", raw.get("full_text", "")),
         posted_at=posted_at,
-        likes_count=raw.get("favorite_count", 0),
-        retweets_count=raw.get("retweet_count", 0),
-        replies_count=raw.get("reply_count", 0),
+        likes_count=raw.get("likeCount", raw.get("favorite_count", 0)),
+        retweets_count=raw.get("retweetCount", raw.get("retweet_count", 0)),
+        replies_count=raw.get("replyCount", raw.get("reply_count", 0)),
     )

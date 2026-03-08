@@ -15,6 +15,11 @@ FROM deps AS dev
 
 COPY . .
 
+RUN mkdir -p /app/models && chown -R appuser:appuser /app/models
+
+ENV HF_HOME=/app/models
+ENV TRANSFORMERS_CACHE=/app/models
+
 USER appuser
 
 EXPOSE 8000
