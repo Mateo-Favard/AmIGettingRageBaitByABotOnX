@@ -33,8 +33,7 @@ async def analyze_account(
             ai_content_score=result.ai_content_score,
             behavioral_score=result.behavioral_score,
             sentiment_score=result.sentiment_score,
-            political_shift_score=result.political_shift_score,
-            network_score=result.network_score,
+            opportunism_score=result.opportunism_score,
         ),
         profile=ProfileSummary(
             handle=profile.handle,

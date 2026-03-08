@@ -90,13 +90,13 @@ class AnalysisService:
         assert self._ml_pipeline is not None
 
         try:
-            following = await self._twitter.fetch_following(handle)
+            trends = await self._twitter.fetch_trends()
         except Exception:
-            logger.warning("Could not fetch following for %s", handle)
-            following = []
+            logger.warning("Could not fetch trends")
+            trends = []
 
         analysis_input = AnalysisInput(
-            profile=profile, tweets=tweets, following=following
+            profile=profile, tweets=tweets, trends=trends
         )
 
         try:
@@ -123,8 +123,7 @@ def _map_pipeline_result(
         ai_content_score=pr.individual_scores.get("ai_content"),
         behavioral_score=pr.individual_scores.get("behavioral"),
         sentiment_score=pr.individual_scores.get("sentiment"),
-        political_shift_score=pr.individual_scores.get("political_shift"),
-        network_score=pr.individual_scores.get("network"),
+        opportunism_score=pr.individual_scores.get("opportunism"),
         details={
             "method": "ml_pipeline",
             "failed_analyzers": pr.failed_analyzers,
@@ -185,8 +184,7 @@ def _serialize_analysis(result: AnalysisResultData) -> str:
         "ai_content_score": result.ai_content_score,
         "behavioral_score": result.behavioral_score,
         "sentiment_score": result.sentiment_score,
-        "political_shift_score": result.political_shift_score,
-        "network_score": result.network_score,
+        "opportunism_score": result.opportunism_score,
         "details": result.details,
         "model_versions": result.model_versions,
     }
@@ -203,8 +201,7 @@ def _deserialize_analysis(raw: str) -> AnalysisResultData:
         ai_content_score=data.get("ai_content_score"),
         behavioral_score=data.get("behavioral_score"),
         sentiment_score=data.get("sentiment_score"),
-        political_shift_score=data.get("political_shift_score"),
-        network_score=data.get("network_score"),
+        opportunism_score=data.get("opportunism_score"),
         details=data.get("details", {}),
         model_versions=data.get("model_versions", {}),
     )

@@ -57,21 +57,26 @@ App web publique qui analyse un compte Twitter/X et calcule un score de probabil
 
 ## Commandes utiles
 
+> **IMPORTANT** : Toutes les commandes doivent être lancées via Docker au maximum. Privilégier `docker compose exec` plutôt qu'un environnement local.
+
 ```bash
 # Dev — tout lancer
 docker compose up -d
 
-# Backend seulement
-cd backend && pip install -e ".[dev]" && uvicorn app.main:app --reload
+# Backend — tests via Docker
+docker compose exec backend pytest
 
-# Tests
-cd backend && pytest
-cd frontend && npm run test
+# Backend — lint via Docker
+docker compose exec backend ruff check .
+docker compose exec backend ruff format --check .
 
-# Lint
-cd backend && ruff check . && ruff format --check .
-cd frontend && npm run lint
+# Frontend — lint via Docker
+docker compose exec frontend npm run lint
 
-# Migrations
-cd backend && alembic upgrade head
+# Migrations via Docker
+docker compose exec backend alembic upgrade head
+
+# Logs
+docker compose logs -f backend
+docker compose logs -f frontend
 ```

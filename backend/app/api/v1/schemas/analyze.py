@@ -37,8 +37,7 @@ class ScoreBreakdown(BaseModel):
     ai_content_score: float | None = None
     behavioral_score: float | None = None
     sentiment_score: float | None = None
-    political_shift_score: float | None = None
-    network_score: float | None = None
+    opportunism_score: float | None = None
 
 
 class ProfileSummary(BaseModel):

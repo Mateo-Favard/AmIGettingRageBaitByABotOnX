@@ -73,8 +73,7 @@ class AnalysisResult(TimestampMixin, Base):
     ai_content_score: Mapped[float | None] = mapped_column(Float)
     behavioral_score: Mapped[float | None] = mapped_column(Float)
     sentiment_score: Mapped[float | None] = mapped_column(Float)
-    political_shift_score: Mapped[float | None] = mapped_column(Float)
-    network_score: Mapped[float | None] = mapped_column(Float)
+    opportunism_score: Mapped[float | None] = mapped_column(Float)
     details: Mapped[dict] = mapped_column(JSONB, default=dict)
     model_versions: Mapped[dict] = mapped_column(JSONB, default=dict)
     analyzed_at: Mapped[datetime] = mapped_column(

@@ -14,7 +14,7 @@ class AnalysisInput:
 
     profile: TwitterProfile
     tweets: list[TweetData]
-    following: list[str]
+    trends: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)

@@ -142,3 +142,20 @@ class MockTwitterClient(TwitterClientInterface):
         if is_suspect:
             return ["suspect_bot42", "suspect_rage", "infochoc_media"]
         return ["journo_marie", "devweb_alex", "lemonde", "bbc_world"]
+
+    async def search_tweets(
+        self, query: str, query_type: str = "Latest"
+    ) -> list[TweetData]:
+        # Return suspect or normal tweets based on query content
+        if "suspect_" in query:
+            return _generate_suspect_tweets("mock_search", 5)
+        return _generate_normal_tweets("mock_search", 5)
+
+    async def fetch_trends(self, woeid: int = 615702) -> list[str]:
+        return [
+            "Réforme des retraites",
+            "Immigration",
+            "Macron",
+            "Ligue 1",
+            "ChatGPT",
+        ]

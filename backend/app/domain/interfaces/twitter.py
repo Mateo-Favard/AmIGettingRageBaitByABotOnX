@@ -18,3 +18,11 @@ class TwitterClientInterface(ABC):
 
     @abstractmethod
     async def fetch_following(self, handle: str, count: int = 100) -> list[str]: ...
+
+    @abstractmethod
+    async def search_tweets(
+        self, query: str, query_type: str = "Latest"
+    ) -> list[TweetData]: ...
+
+    @abstractmethod
+    async def fetch_trends(self, woeid: int = 615702) -> list[str]: ...

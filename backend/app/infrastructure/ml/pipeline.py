@@ -18,8 +18,7 @@ DEFAULT_WEIGHTS: dict[str, float] = {
     "ai_content": 0.25,
     "sentiment": 0.25,
     "behavioral": 0.20,
-    "political_shift": 0.15,
-    "network": 0.15,
+    "opportunism": 0.30,
 }
 
 DEFAULT_PER_ANALYZER_TIMEOUT: float = 30.0

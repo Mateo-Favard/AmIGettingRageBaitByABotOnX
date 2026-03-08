@@ -24,7 +24,6 @@ const signals = computed(() => [
   { key: 'ai_content', label: 'Contenu IA', value: props.scores.ai_content_score },
   { key: 'behavioral', label: 'Comportement', value: props.scores.behavioral_score },
   { key: 'sentiment', label: 'Sentiment', value: props.scores.sentiment_score },
-  { key: 'political_shift', label: 'Virage politique', value: props.scores.political_shift_score },
-  { key: 'network', label: 'Réseau', value: props.scores.network_score },
+  { key: 'opportunism', label: 'Opportunisme', value: props.scores.opportunism_score },
 ])
 </script>
