@@ -46,14 +46,14 @@ Recherche, intégration et scoring des modèles.
 
 | # | Tâche | Statut | Notes |
 |---|---|---|---|
-| 3.1 | Interface Analyzer (port commun ABC) | ⬜ À faire | |
-| 3.2 | Pipeline ML (orchestrateur) | ⬜ À faire | |
-| 3.3 | Recherche + intégration : détection texte IA | ⬜ À faire | Modèle francophone à trouver |
-| 3.4 | Recherche + intégration : sentiment analysis | ⬜ À faire | CamemBERT-based ? |
-| 3.5 | Module : patterns comportementaux (heuristiques) | ⬜ À faire | |
-| 3.6 | Module : virage politique opportuniste | ⬜ À faire | |
-| 3.7 | Module : analyse réseau | ⬜ À faire | |
-| 3.8 | Script de téléchargement des modèles | ⬜ À faire | safetensors only |
+| 3.1 | Interface Analyzer (port commun ABC) | ✅ Terminé | `AnalysisInput`, `AnalyzerResult`, `AnalyzerInterface` |
+| 3.2 | Pipeline ML (orchestrateur) | ✅ Terminé | Parallel + timeouts + fault tolerance |
+| 3.3 | Recherche + intégration : détection texte IA | ✅ Terminé | opus-mt-fr-en + roberta-ai-detection |
+| 3.4 | Recherche + intégration : sentiment analysis | ✅ Terminé | camembert-base-tweet-sentiment-fr |
+| 3.5 | Module : patterns comportementaux (heuristiques) | ✅ Terminé | 5 signaux heuristiques |
+| 3.6 | Module : virage politique opportuniste | ✅ Terminé | politics-sentence-classifier + rolling window |
+| 3.7 | Module : analyse réseau | ✅ Terminé | DB lookup + suspect detection |
+| 3.8 | Script de téléchargement des modèles | ✅ Terminé | safetensors only, CLI idempotent |
 
 ## Phase 4 — Frontend
 

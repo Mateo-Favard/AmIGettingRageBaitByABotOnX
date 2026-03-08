@@ -22,7 +22,7 @@ App web publique qui analyse un compte Twitter/X et calcule un score de probabil
 |---|---|---|
 | Phase 1 — Fondations | ✅ Terminé | 15/15 |
 | Phase 2 — Intégration Twitter | ✅ Terminé | 8/8 + Twikit |
-| Phase 3 — Pipeline ML | ⬜ À faire | 0/8 |
+| Phase 3 — Pipeline ML | ✅ Terminé | 8/8 |
 | Phase 4 — Frontend | ⬜ À faire | 0/5 |
 | Phase 5 — Graphe social | ⬜ À faire | 0/4 |
 | Phase 6 — Production | ⬜ À faire | 0/7 |

@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import logging
 from collections.abc import AsyncGenerator
 
 from redis.asyncio import Redis
@@ -10,9 +13,15 @@ from app.domain.interfaces.twitter import TwitterClientInterface
 from app.domain.services.analysis import AnalysisService
 from app.infrastructure.db.repositories.account import AccountRepository
 from app.infrastructure.db.session import get_db_session as _get_db_session
+from app.infrastructure.ml.pipeline import MLPipeline
 from app.infrastructure.redis.cache import RedisCache
 from app.infrastructure.redis.client import _get_redis_client
 from app.infrastructure.redis.client import get_redis as _get_redis
+
+logger = logging.getLogger(__name__)
+
+_ml_pipeline: MLPipeline | None = None
+_ml_pipeline_initialized: bool = False
 
 
 async def get_settings_dep() -> Settings:
@@ -69,10 +78,101 @@ async def get_account_repository(
     return AccountRepository(session)
 
 
+def get_ml_pipeline() -> MLPipeline | None:
+    """Return the ML pipeline singleton, or None if models are unavailable."""
+    global _ml_pipeline, _ml_pipeline_initialized
+
+    if _ml_pipeline_initialized:
+        return _ml_pipeline
+
+    _ml_pipeline_initialized = True
+    settings = get_settings()
+
+    try:
+        analyzers = _build_analyzers(settings)
+        if not analyzers:
+            logger.info("No ML analyzers available, using placeholder scoring")
+            return None
+
+        _ml_pipeline = MLPipeline(
+            analyzers=analyzers,
+            global_timeout=float(settings.ml_inference_timeout_seconds),
+            per_analyzer_timeout=settings.ml_per_analyzer_timeout_seconds,
+        )
+        logger.info(
+            "ML pipeline initialized with %d analyzers: %s",
+            len(analyzers),
+            [a.name for a in analyzers],
+        )
+    except Exception:
+        logger.exception("Failed to initialize ML pipeline")
+        _ml_pipeline = None
+
+    return _ml_pipeline
+
+
+def _build_analyzers(settings: Settings) -> list:  # type: ignore[type-arg]
+    """Instantiate all available analyzers."""
+    from app.domain.interfaces.analyzer import AnalyzerInterface
+
+    analyzers: list[AnalyzerInterface] = []
+
+    # Behavioral (always available — pure heuristics)
+    try:
+        from app.infrastructure.ml.analyzers.behavioral import (
+            BehavioralAnalyzer,
+        )
+
+        analyzers.append(BehavioralAnalyzer())
+    except Exception:
+        logger.warning("BehavioralAnalyzer not available")
+
+    # Network (always available — heuristics + DB)
+    try:
+        from app.infrastructure.ml.analyzers.network import NetworkAnalyzer
+
+        analyzers.append(NetworkAnalyzer())
+    except Exception:
+        logger.warning("NetworkAnalyzer not available")
+
+    # Sentiment (requires model)
+    try:
+        from app.infrastructure.ml.analyzers.sentiment import (
+            SentimentAnalyzer,
+        )
+
+        analyzers.append(SentimentAnalyzer(models_path=settings.ml_models_path))
+    except Exception:
+        logger.warning("SentimentAnalyzer not available (model not downloaded?)")
+
+    # AI Content (requires models)
+    try:
+        from app.infrastructure.ml.analyzers.ai_content import (
+            AIContentAnalyzer,
+        )
+
+        analyzers.append(AIContentAnalyzer(models_path=settings.ml_models_path))
+    except Exception:
+        logger.warning("AIContentAnalyzer not available (models not downloaded?)")
+
+    # Political Shift (requires model)
+    try:
+        from app.infrastructure.ml.analyzers.political_shift import (
+            PoliticalShiftAnalyzer,
+        )
+
+        analyzers.append(PoliticalShiftAnalyzer(models_path=settings.ml_models_path))
+    except Exception:
+        logger.warning("PoliticalShiftAnalyzer not available (model not downloaded?)")
+
+    return analyzers
+
+
 async def get_analysis_service() -> AsyncGenerator[AnalysisService]:
     settings = get_settings()
     twitter_client = await get_twitter_client()
     cache = RedisCache(_get_redis_client())
+    ml_pipeline = get_ml_pipeline()
 
     async for session in _get_db_session():
         repo = AccountRepository(session)
@@ -81,4 +181,5 @@ async def get_analysis_service() -> AsyncGenerator[AnalysisService]:
             account_repo=repo,
             cache=cache,
             cache_ttl_seconds=settings.analysis_cache_ttl_seconds,
+            ml_pipeline=ml_pipeline,
         )

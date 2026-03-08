@@ -53,6 +53,8 @@ class Settings(BaseSettings):
 
     # --- ML ---
     ml_inference_timeout_seconds: int = 30
+    ml_per_analyzer_timeout_seconds: float = 30.0
+    ml_models_path: str = "models"
 
     @model_validator(mode="after")
     def validate_no_debug_in_production(self) -> "Settings":

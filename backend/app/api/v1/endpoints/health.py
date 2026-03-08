@@ -5,8 +5,9 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
 
-from app.dependencies import get_cache, get_db_session
+from app.dependencies import get_cache, get_db_session, get_ml_pipeline
 from app.domain.interfaces.cache import CacheInterface
+from app.infrastructure.ml.pipeline import MLPipeline
 
 router = APIRouter()
 
@@ -27,6 +28,21 @@ async def _check_cache(cache: CacheInterface) -> str:
         return "unavailable"
 
 
+async def _check_ml(pipeline: MLPipeline | None) -> dict[str, str]:
+    if pipeline is None:
+        return {"status": "not_loaded"}
+
+    try:
+        results = await pipeline.health_check()
+        all_ok = all(results.values())
+        return {
+            "status": "ok" if all_ok else "degraded",
+            **{k: "ok" if v else "unavailable" for k, v in results.items()},
+        }
+    except Exception:
+        return {"status": "error"}
+
+
 @router.get("/health")
 async def health_check(
     session: AsyncSession = Depends(get_db_session),  # noqa: B008
@@ -35,10 +51,12 @@ async def health_check(
     db_status = await _check_database(session)
     cache_status = await _check_cache(cache)
 
+    ml_status = await _check_ml(get_ml_pipeline())
+
     checks: dict[str, Any] = {
         "database": db_status,
         "redis": cache_status,
-        "ml_models": "not_loaded",
+        "ml_models": ml_status,
     }
 
     all_critical_ok = db_status == "ok"
