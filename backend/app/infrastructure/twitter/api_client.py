@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import httpx
@@ -56,21 +56,51 @@ class TwitterAPIClient(TwitterClientInterface):
         )
 
     async def fetch_recent_tweets(
-        self, handle: str, count: int = 20
+        self, handle: str, count: int = 20, weeks: int = 5
+    ) -> list[TweetData]:
+        """Fetch tweets spread across the last N weeks using Advanced Search.
+
+        Makes one search per week (from:{handle} since:... until:...),
+        filtering out retweets. Costs 1 API call per week.
+        """
+        now = datetime.now(tz=UTC)
+        all_tweets: list[TweetData] = []
+
+        for week_idx in range(weeks):
+            week_end = now - timedelta(weeks=week_idx)
+            week_start = now - timedelta(weeks=week_idx + 1)
+            since = week_start.strftime("%Y-%m-%d")
+            until = week_end.strftime("%Y-%m-%d")
+
+            query = f"from:{handle} -filter:retweets since:{since} until:{until}"
+            tweets = await self.search_tweets(query)
+            all_tweets.extend(tweets)
+
+        return all_tweets
+
+    async def search_tweets(
+        self, query: str, query_type: str = "Latest"
     ) -> list[TweetData]:
         data = await self._request(
             "GET",
-            f"{_BASE_URL}/user/last_tweets",
-            params={"userName": handle, "count": str(count)},
+            f"{_BASE_URL}/tweet/advanced_search",
+            params={"query": query, "queryType": query_type},
         )
-        raw_data = data.get("data", [])
-        if isinstance(raw_data, dict):
-            tweets_raw = raw_data.get("tweets", [])
-        elif isinstance(raw_data, list):
-            tweets_raw = raw_data
-        else:
-            tweets_raw = []
-        return [_parse_tweet(t) for t in tweets_raw]
+        tweets_raw = data.get("tweets", [])
+        return [
+            _parse_tweet(t) for t in tweets_raw
+            if isinstance(t, dict) and not t.get("text", "").startswith("RT @")
+        ]
+
+    async def fetch_trends(self, woeid: int = 615702) -> list[str]:
+        """Fetch current trending topics. Default woeid=615702 (France)."""
+        data = await self._request(
+            "GET",
+            f"{_BASE_URL}/trends",
+            params={"woeid": str(woeid)},
+        )
+        trends_raw = data.get("trends", [])
+        return [t.get("name", "") for t in trends_raw if isinstance(t, dict)]
 
     async def fetch_following(self, handle: str, count: int = 100) -> list[str]:
         data = await self._request(

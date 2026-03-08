@@ -2,8 +2,7 @@ export interface ScoreBreakdown {
   ai_content_score: number | null
   behavioral_score: number | null
   sentiment_score: number | null
-  political_shift_score: number | null
-  network_score: number | null
+  opportunism_score: number | null
 }
 
 export interface ProfileSummary {

@@ -127,14 +127,6 @@ def _build_analyzers(settings: Settings) -> list:  # type: ignore[type-arg]
     except Exception:
         logger.warning("BehavioralAnalyzer not available")
 
-    # Network (always available — heuristics + DB)
-    try:
-        from app.infrastructure.ml.analyzers.network import NetworkAnalyzer
-
-        analyzers.append(NetworkAnalyzer())
-    except Exception:
-        logger.warning("NetworkAnalyzer not available")
-
     # Sentiment (requires model)
     try:
         from app.infrastructure.ml.analyzers.sentiment import (
@@ -155,15 +147,15 @@ def _build_analyzers(settings: Settings) -> list:  # type: ignore[type-arg]
     except Exception:
         logger.warning("AIContentAnalyzer not available (models not downloaded?)")
 
-    # Political Shift (requires model)
+    # Opportunism (requires model)
     try:
-        from app.infrastructure.ml.analyzers.political_shift import (
-            PoliticalShiftAnalyzer,
+        from app.infrastructure.ml.analyzers.opportunism import (
+            OpportunismAnalyzer,
         )
 
-        analyzers.append(PoliticalShiftAnalyzer(models_path=settings.ml_models_path))
+        analyzers.append(OpportunismAnalyzer(models_path=settings.ml_models_path))
     except Exception:
-        logger.warning("PoliticalShiftAnalyzer not available (model not downloaded?)")
+        logger.warning("OpportunismAnalyzer not available (model not downloaded?)")
 
     return analyzers
 

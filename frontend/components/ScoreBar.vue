@@ -27,24 +27,24 @@ const props = withDefaults(defineProps<{
 })
 
 const clampedScore = computed(() => {
-  if (props.score === null) return 0
+  if (props.score == null) return 0
   return Math.max(0, Math.min(100, props.score))
 })
 
 const displayScore = computed(() => {
-  if (props.score === null) return 'N/A'
+  if (props.score == null) return 'N/A'
   return `${Math.round(props.score)}/100`
 })
 
 const scoreBarColor = computed(() => {
-  if (props.score === null) return 'bg-zinc-600'
+  if (props.score == null) return 'bg-zinc-600'
   if (props.score < 30) return 'bg-green-500'
   if (props.score < 60) return 'bg-yellow-500'
   return 'bg-red-500'
 })
 
 const scoreTextColor = computed(() => {
-  if (props.score === null) return 'text-zinc-500'
+  if (props.score == null) return 'text-zinc-500'
   if (props.score < 30) return 'text-green-500'
   if (props.score < 60) return 'text-yellow-500'
   return 'text-red-500'

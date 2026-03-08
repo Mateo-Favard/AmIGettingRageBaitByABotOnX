@@ -156,6 +156,22 @@ class TwikitClient(TwitterClientInterface):
 
         return [u.screen_name for u in following if u.screen_name]
 
+    async def search_tweets(
+        self, query: str, query_type: str = "Latest"
+    ) -> list[TweetData]:
+        await self._ensure_logged_in()
+        try:
+            results = await self._client.search_tweet(query, product=query_type)
+        except Exception as exc:
+            raise TwitterAPIError(
+                f"Twikit search_tweets failed: {exc}",
+            ) from exc
+        return [_map_tweet(t) for t in results]
+
+    async def fetch_trends(self, woeid: int = 615702) -> list[str]:
+        # Twikit doesn't support trends natively
+        return []
+
 
 def _parse_created_at(value: str | None) -> datetime | None:
     """Parse une date de creation de compte Twitter.

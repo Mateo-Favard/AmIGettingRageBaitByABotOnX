@@ -20,11 +20,11 @@ MODEL_DIR_NAME = "mazancourt--politics-sentence-classifier"
 WINDOW_SIZE = 5
 
 
-class PoliticalShiftAnalyzer(AnalyzerInterface):
-    """Detects opportunistic political rage-bait patterns.
-
-    Uses a CamemBERT-based classifier (problem/solution/other) combined
-    with temporal heuristics to detect sudden topic shifts.
+class OpportunismAnalyzer(AnalyzerInterface):
+    """Detects opportunistic rage-bait patterns via three signals:
+    - Problem-framing ratio (CamemBERT classifier)
+    - Temporal topic shifts (rolling window variance)
+    - Trend-jacking (tweets matching current trending topics)
     """
 
     def __init__(self, models_path: str = "models") -> None:
@@ -47,11 +47,11 @@ class PoliticalShiftAnalyzer(AnalyzerInterface):
 
     @property
     def name(self) -> str:
-        return "political_shift"
+        return "opportunism"
 
     @property
     def version(self) -> str:
-        return "1.0.0"
+        return "2.0.0"
 
     async def analyze(self, data: AnalysisInput) -> AnalyzerResult:
         tweets = data.tweets
@@ -79,14 +79,16 @@ class PoliticalShiftAnalyzer(AnalyzerInterface):
 
         problem_ratio = problem_count / total
 
-        # Signal 1: Problem ratio (max 60 points)
-        # High proportion of problem-framing = rage bait pattern
-        problem_score = problem_ratio * 60
+        # Signal 1: Problem ratio (max 40 points)
+        problem_score = problem_ratio * 40
 
-        # Signal 2: Temporal shift analysis (max 40 points)
+        # Signal 2: Temporal shift analysis (max 30 points)
         shift_score = self._compute_shift_score(labels)
 
-        score = min(100.0, max(0.0, round(problem_score + shift_score, 1)))
+        # Signal 3: Trend-jacking (max 30 points)
+        trend_score = self._compute_trend_score(texts, data.trends)
+
+        score = min(100.0, max(0.0, round(problem_score + shift_score + trend_score, 1)))
         confidence = self._compute_confidence(total, sorted_tweets)
 
         return AnalyzerResult(
@@ -99,6 +101,8 @@ class PoliticalShiftAnalyzer(AnalyzerInterface):
                 "total_tweets": total,
                 "problem_ratio": round(problem_ratio, 3),
                 "shift_score": round(shift_score, 1),
+                "trend_score": round(trend_score, 1),
+                "trends_matched": self._find_matched_trends(texts, data.trends),
             },
         )
 
@@ -132,8 +136,41 @@ class PoliticalShiftAnalyzer(AnalyzerInterface):
 
         # High variance = frequent topic shifts = suspicious
         variance = statistics.variance(window_ratios)
-        # Scale: variance of 0.25 (max for binary) -> 40 points
-        return min(40.0, variance * 160.0)
+        # Scale: variance of 0.25 (max for binary) -> 30 points
+        return min(30.0, variance * 120.0)
+
+    @staticmethod
+    def _compute_trend_score(texts: list[str], trends: list[str]) -> float:
+        """Detect trend-jacking: tweets that match current trending topics.
+
+        A high proportion of tweets mentioning trends suggests the account
+        is opportunistically jumping on popular topics to maximize reach.
+        """
+        if not trends or not texts:
+            return 0.0
+
+        trends_lower = [t.lower() for t in trends]
+        matching_tweets = 0
+        for text in texts:
+            text_lower = text.lower()
+            if any(trend in text_lower for trend in trends_lower):
+                matching_tweets += 1
+
+        ratio = matching_tweets / len(texts)
+        # 50%+ tweets on trending topics = max score
+        return min(30.0, ratio * 60.0)
+
+    @staticmethod
+    def _find_matched_trends(texts: list[str], trends: list[str]) -> list[str]:
+        """Return which trends were found in the tweets."""
+        if not trends or not texts:
+            return []
+        matched: list[str] = []
+        all_text = " ".join(t.lower() for t in texts)
+        for trend in trends:
+            if trend.lower() in all_text:
+                matched.append(trend)
+        return matched
 
     @staticmethod
     def _compute_confidence(tweet_count: int, sorted_tweets: list[TweetData]) -> float:
