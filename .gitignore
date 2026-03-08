@@ -1,0 +1,86 @@
+# ========================
+# Secrets & Environment
+# ========================
+.env
+.env.local
+.env.prod
+.env.*.local
+!.env.example
+!.env.prod.example
+
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# ========================
+# Node.js / Nuxt
+# ========================
+node_modules/
+.nuxt/
+.output/
+.nitro/
+.cache/
+dist/
+*.tsbuildinfo
+
+# ========================
+# ML Models (trop volumineux pour git)
+# ========================
+*.bin
+*.safetensors
+*.onnx
+*.pt
+*.pth
+*.h5
+*.pkl
+*.pickle
+models/
+
+# ========================
+# IDE
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ========================
+# Docker
+# ========================
+docker-compose.override.yml
+
+# ========================
+# Backups
+# ========================
+backups/
+
+# ========================
+# Logs
+# ========================
+*.log
+logs/
+
+# ========================
+# OS
+# ========================
+Thumbs.db
+.DS_Store
