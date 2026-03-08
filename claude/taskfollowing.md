@@ -67,30 +67,30 @@ Interface utilisateur avec Vue/Nuxt SSR.
 | 4.4 | Composable API (useApi, useAnalysis) | ⬜ À faire | |
 | 4.5 | Tests frontend (vitest) | ⬜ À faire | |
 
-## Phase 5 — Graphe social
-
-Analyse réseau et cross-référencement.
-
-| # | Tâche | Statut | Notes |
-|---|---|---|---|
-| 5.1 | Stocker les follows niveau 1 | ⬜ À faire | |
-| 5.2 | Endpoint API graphe social | ⬜ À faire | |
-| 5.3 | Détection de clusters | ⬜ À faire | |
-| 5.4 | Configuration profondeur du graphe | ⬜ À faire | |
-
-## Phase 6 — Production
+## Phase 5 — Production
 
 Déploiement et hardening.
 
 | # | Tâche | Statut | Notes |
 |---|---|---|---|
-| 6.1 | Dockerfile production (backend multi-stage) | ⬜ À faire | |
-| 6.2 | Dockerfile production (frontend) | ⬜ À faire | |
-| 6.3 | Docker Compose production (avec Traefik) | ⬜ À faire | |
-| 6.4 | CI/CD : build + push images (GHCR) | ⬜ À faire | |
-| 6.5 | Backups DB automatisés | ⬜ À faire | |
-| 6.6 | Monitoring et health check | ⬜ À faire | |
-| 6.7 | Mentions légales et RGPD | ⬜ À faire | |
+| 5.1 | Dockerfile production (backend multi-stage) | ⬜ À faire | |
+| 5.2 | Dockerfile production (frontend) | ⬜ À faire | |
+| 5.3 | Docker Compose production (avec Traefik) | ⬜ À faire | |
+| 5.4 | CI/CD : build + push images (GHCR) | ⬜ À faire | |
+| 5.5 | Backups DB automatisés | ⬜ À faire | |
+| 5.6 | Monitoring et health check | ⬜ À faire | |
+| 5.7 | Mentions légales et RGPD | ⬜ À faire | |
+
+## Phase 6 — Graphe social
+
+Analyse réseau et cross-référencement.
+
+| # | Tâche | Statut | Notes |
+|---|---|---|---|
+| 6.1 | Stocker les follows niveau 1 | ⬜ À faire | |
+| 6.2 | Endpoint API graphe social | ⬜ À faire | |
+| 6.3 | Détection de clusters | ⬜ À faire | |
+| 6.4 | Configuration profondeur du graphe | ⬜ À faire | |
 
 ---
 
