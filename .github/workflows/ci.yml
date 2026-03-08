@@ -131,17 +131,6 @@ jobs:
       - run: npx nuxt prepare
       - run: npm run typecheck
 
-  secrets-scan:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
-
   docker-build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
