@@ -12,7 +12,9 @@ if TYPE_CHECKING:
         AccountRepositoryInterface,
     )
     from app.domain.interfaces.twitter import TwitterClientInterface
+    from app.infrastructure.ml.pipeline import MLPipeline, PipelineResult
 
+from app.domain.interfaces.analyzer import AnalysisInput
 from app.domain.models.twitter import AnalysisResultData, TwitterProfile
 
 logger = logging.getLogger(__name__)
@@ -25,11 +27,13 @@ class AnalysisService:
         account_repo: AccountRepositoryInterface,
         cache: CacheInterface,
         cache_ttl_seconds: int = 604_800,
+        ml_pipeline: MLPipeline | None = None,
     ) -> None:
         self._twitter = twitter_client
         self._repo = account_repo
         self._cache = cache
         self._cache_ttl = cache_ttl_seconds
+        self._ml_pipeline = ml_pipeline
 
     async def analyze(
         self, handle: str, *, force: bool = False
@@ -58,32 +62,97 @@ class AnalysisService:
         # 4. Save tweets
         await self._repo.save_tweets(account_id, tweets)
 
-        # 5. Compute score (placeholder heuristic)
-        score = _compute_placeholder_score(profile)
+        # 5. Compute score
+        if self._ml_pipeline is not None:
+            result = await self._run_ml_pipeline(account_id, handle, profile, tweets)
+        else:
+            result = _build_placeholder_result(account_id, handle, profile)
 
-        # 6. Build result
-        now = datetime.now(tz=UTC)
-        result = AnalysisResultData(
-            account_id=account_id,
-            handle=handle,
-            composite_score=score,
-            analyzed_at=now,
-            behavioral_score=score,
-            details={
-                "method": "placeholder_heuristic",
-                "version": "0.1.0",
-            },
-            model_versions={"scoring": "placeholder_v1"},
-        )
-
-        # 7. Persist analysis
+        # 6. Persist analysis
         await self._repo.save_analysis(result)
 
-        # 8. Cache result
+        # 7. Cache result
         await self._cache.set(cache_key, _serialize_analysis(result), self._cache_ttl)
 
-        logger.info("Analysis complete for %s: score=%.1f", handle, score)
+        logger.info(
+            "Analysis complete for %s: score=%.1f", handle, result.composite_score
+        )
         return result, False
+
+    async def _run_ml_pipeline(
+        self,
+        account_id: uuid.UUID,
+        handle: str,
+        profile: TwitterProfile,
+        tweets: list[Any],
+    ) -> AnalysisResultData:
+        """Run the ML pipeline and map results to AnalysisResultData."""
+        assert self._ml_pipeline is not None
+
+        try:
+            following = await self._twitter.fetch_following(handle)
+        except Exception:
+            logger.warning("Could not fetch following for %s", handle)
+            following = []
+
+        analysis_input = AnalysisInput(
+            profile=profile, tweets=tweets, following=following
+        )
+
+        try:
+            pipeline_result = await self._ml_pipeline.run(analysis_input)
+        except Exception:
+            logger.exception("ML pipeline failed for %s, using placeholder")
+            return _build_placeholder_result(account_id, handle, profile)
+
+        return _map_pipeline_result(account_id, handle, pipeline_result)
+
+
+def _map_pipeline_result(
+    account_id: uuid.UUID,
+    handle: str,
+    pr: PipelineResult,
+) -> AnalysisResultData:
+    """Convert PipelineResult to AnalysisResultData."""
+    now = datetime.now(tz=UTC)
+    return AnalysisResultData(
+        account_id=account_id,
+        handle=handle,
+        composite_score=pr.composite_score,
+        analyzed_at=now,
+        ai_content_score=pr.individual_scores.get("ai_content"),
+        behavioral_score=pr.individual_scores.get("behavioral"),
+        sentiment_score=pr.individual_scores.get("sentiment"),
+        political_shift_score=pr.individual_scores.get("political_shift"),
+        network_score=pr.individual_scores.get("network"),
+        details={
+            "method": "ml_pipeline",
+            "failed_analyzers": pr.failed_analyzers,
+            **{k: dict(v) for k, v in pr.details.items()},
+        },
+        model_versions=pr.model_versions,
+    )
+
+
+def _build_placeholder_result(
+    account_id: uuid.UUID,
+    handle: str,
+    profile: TwitterProfile,
+) -> AnalysisResultData:
+    score = _compute_placeholder_score(profile)
+    now = datetime.now(tz=UTC)
+    return AnalysisResultData(
+        account_id=account_id,
+        handle=handle,
+        composite_score=score,
+        analyzed_at=now,
+        behavioral_score=score,
+        details={
+            "method": "placeholder_heuristic",
+            "version": "0.1.0",
+        },
+        model_versions={"scoring": "placeholder_v1"},
+    )
 
 
 def _compute_placeholder_score(profile: TwitterProfile) -> float:

@@ -726,16 +726,16 @@
 
 ### Checklist Phase 3
 
-- [ ] **T3.1** — Interface Analyzer (port commun)
-- [ ] **T3.2** — Pipeline ML (orchestrateur)
-- [ ] **T3.3** — Recherche et intégration : détection texte IA
-- [ ] **T3.4** — Recherche et intégration : sentiment analysis
-- [ ] **T3.5** — Module : patterns comportementaux
-- [ ] **T3.6** — Module : virage politique opportuniste
-- [ ] **T3.7** — Module : analyse réseau
-- [ ] **T3.8** — Script de téléchargement des modèles
+- [x] **T3.1** — Interface Analyzer (port commun)
+- [x] **T3.2** — Pipeline ML (orchestrateur)
+- [x] **T3.3** — Recherche et intégration : détection texte IA
+- [x] **T3.4** — Recherche et intégration : sentiment analysis
+- [x] **T3.5** — Module : patterns comportementaux
+- [x] **T3.6** — Module : virage politique opportuniste
+- [x] **T3.7** — Module : analyse réseau
+- [x] **T3.8** — Script de téléchargement des modèles
 
-> **Progression** : 0/8 — **Branche** : `feature/phase-3-ml-pipeline`
+> **Progression** : 8/8 — **Branche** : `feature/phase-3-ml-pipeline`
 
 ---
 

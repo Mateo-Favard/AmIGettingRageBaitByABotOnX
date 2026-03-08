@@ -8,7 +8,8 @@ ENV PYTHONUNBUFFERED=1
 RUN groupadd -r appuser && useradd -r -g appuser -s /sbin/nologin appuser
 
 COPY pyproject.toml .
-RUN pip install --no-cache-dir -e ".[dev]"
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu \
+    && pip install --no-cache-dir -e ".[dev]"
 
 FROM deps AS dev
 
