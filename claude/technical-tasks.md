@@ -972,86 +972,23 @@
 
 ---
 
-## Phase 5 — Graphe social
+## Phase 5 — Production
 
 ### Checklist Phase 5
 
-- [ ] **T5.1** — Stocker les follows niveau 1
-- [ ] **T5.2** — Endpoint API graphe social
-- [ ] **T5.3** — Détection de clusters
-- [ ] **T5.4** — Configuration profondeur du graphe
+- [ ] **T5.1** — Dockerfile production (backend)
+- [ ] **T5.2** — Dockerfile production (frontend)
+- [ ] **T5.3** — Docker Compose production
+- [ ] **T5.4** — CI/CD : build + push images
+- [ ] **T5.5** — Backups DB automatisés
+- [ ] **T5.6** — Monitoring et health check
+- [ ] **T5.7** — Mentions légales et RGPD
 
-> **Progression** : 0/4 — **Branche** : `feature/phase-5-social-graph`
-
----
-
-### T5.1 — Stocker les follows niveau 1
-
-**US** : US-GR-01
-**Fichiers** : `backend/app/infrastructure/db/repositories/social.py`
-
-**Tâches** :
-- Repo `SocialRelationRepository` :
-  - `async save_following(source_handle: str, following_handles: list[str]) -> None`
-  - `async get_analyzed_connections(handle: str) -> list[AnalyzedConnection]`
-- Lors de chaque analyse : stocker les follows dans `SocialRelation`
-- Ne stocker que si le follow est aussi un compte analysé (ou le stocker pour futur cross-ref)
+> **Progression** : 0/7 — **Branche** : `feature/phase-5-production`
 
 ---
 
-### T5.2 — Endpoint API graphe social
-
-**US** : US-GR-02
-**Fichiers** : `backend/app/api/v1/endpoints/graph.py`
-
-**Tâches** :
-- `GET /api/v1/graph/{handle}` : retourne les connexions connues
-- Rate limiting : 20 req/min par IP
-- Response : liste de comptes liés avec leur score (si analysé)
-
----
-
-### T5.3 — Détection de clusters
-
-**US** : US-GR-03
-**Fichiers** : `backend/app/domain/services/cluster_detection.py`
-
-**Tâches** :
-- Algorithme de détection de communautés (composantes connexes ou Louvain simplifié)
-- Identifier les groupes de comptes rage bait interconnectés
-- Ajouter le résultat cluster au score réseau
-
----
-
-### T5.4 — Configuration profondeur du graphe
-
-**US** : US-GR-04
-**Fichiers** : config + service
-
-**Tâches** :
-- Setting `graph_depth: int = 1` dans la config
-- Le service de fetch des follows respecte cette profondeur
-- Architecture modulaire pour supporter profondeur > 1 plus tard
-
----
-
-## Phase 6 — Production
-
-### Checklist Phase 6
-
-- [ ] **T6.1** — Dockerfile production (backend)
-- [ ] **T6.2** — Dockerfile production (frontend)
-- [ ] **T6.3** — Docker Compose production
-- [ ] **T6.4** — CI/CD : build + push images
-- [ ] **T6.5** — Backups DB automatisés
-- [ ] **T6.6** — Monitoring et health check
-- [ ] **T6.7** — Mentions légales et RGPD
-
-> **Progression** : 0/7 — **Branche** : `feature/phase-6-production`
-
----
-
-### T6.1 — Dockerfile production (backend)
+### T5.1 — Dockerfile production (backend)
 
 **US** : US-INFRA-03, US-INFRA-04
 **Fichiers** : `backend/Dockerfile.prod`
@@ -1066,7 +1003,7 @@
 
 ---
 
-### T6.2 — Dockerfile production (frontend)
+### T5.2 — Dockerfile production (frontend)
 
 **US** : US-INFRA-03
 **Fichiers** : `frontend/Dockerfile.prod`
@@ -1078,7 +1015,7 @@
 
 ---
 
-### T6.3 — Docker Compose production
+### T5.3 — Docker Compose production
 
 **US** : US-INFRA-01
 **Fichiers** : `docker-compose.prod.yml`
@@ -1095,7 +1032,7 @@
 
 ---
 
-### T6.4 — CI/CD : build + push images
+### T5.4 — CI/CD : build + push images
 
 **US** : US-INFRA-03
 **Fichiers** : `.github/workflows/cd.yml`
@@ -1110,7 +1047,7 @@
 
 ---
 
-### T6.5 — Backups DB automatisés
+### T5.5 — Backups DB automatisés
 
 **US** : US-INFRA-05
 **Fichiers** : `scripts/backup.sh`, cron ou service Docker
@@ -1124,7 +1061,7 @@
 
 ---
 
-### T6.6 — Monitoring et health check
+### T5.6 — Monitoring et health check
 
 **US** : US-INFRA-06
 **Fichiers** : configuration Traefik + logs
@@ -1137,7 +1074,7 @@
 
 ---
 
-### T6.7 — Mentions légales et RGPD
+### T5.7 — Mentions légales et RGPD
 
 **US** : US-RGPD-01, US-RGPD-02, US-RGPD-03
 **Fichiers** : `frontend/pages/legal.vue`, endpoint API suppression
@@ -1155,6 +1092,69 @@
 
 ---
 
+## Phase 6 — Graphe social
+
+### Checklist Phase 6
+
+- [ ] **T6.1** — Stocker les follows niveau 1
+- [ ] **T6.2** — Endpoint API graphe social
+- [ ] **T6.3** — Détection de clusters
+- [ ] **T6.4** — Configuration profondeur du graphe
+
+> **Progression** : 0/4 — **Branche** : `feature/phase-6-social-graph`
+
+---
+
+### T6.1 — Stocker les follows niveau 1
+
+**US** : US-GR-01
+**Fichiers** : `backend/app/infrastructure/db/repositories/social.py`
+
+**Tâches** :
+- Repo `SocialRelationRepository` :
+  - `async save_following(source_handle: str, following_handles: list[str]) -> None`
+  - `async get_analyzed_connections(handle: str) -> list[AnalyzedConnection]`
+- Lors de chaque analyse : stocker les follows dans `SocialRelation`
+- Ne stocker que si le follow est aussi un compte analysé (ou le stocker pour futur cross-ref)
+
+---
+
+### T6.2 — Endpoint API graphe social
+
+**US** : US-GR-02
+**Fichiers** : `backend/app/api/v1/endpoints/graph.py`
+
+**Tâches** :
+- `GET /api/v1/graph/{handle}` : retourne les connexions connues
+- Rate limiting : 20 req/min par IP
+- Response : liste de comptes liés avec leur score (si analysé)
+
+---
+
+### T6.3 — Détection de clusters
+
+**US** : US-GR-03
+**Fichiers** : `backend/app/domain/services/cluster_detection.py`
+
+**Tâches** :
+- Algorithme de détection de communautés (composantes connexes ou Louvain simplifié)
+- Identifier les groupes de comptes rage bait interconnectés
+- Ajouter le résultat cluster au score réseau
+
+---
+
+### T6.4 — Configuration profondeur du graphe
+
+**US** : US-GR-04
+**Fichiers** : config + service
+
+**Tâches** :
+- Setting `graph_depth: int = 1` dans la config
+- Le service de fetch des follows respecte cette profondeur
+- Architecture modulaire pour supporter profondeur > 1 plus tard
+
+---
+
 ## Ordre d'implémentation recommandé
 
 ```
@@ -1162,8 +1162,8 @@ Phase 1 : T1.1 → T1.2 → T1.3 → T1.4 → T1.5 → T1.6 → T1.7 → T1.8 �
 Phase 2 : T2.1 → T2.2 → T2.4 → T2.7 → T2.8 → T2.6 → T2.5 → T2.3
 Phase 3 : T3.1 → T3.2 → T3.5 → T3.3 → T3.4 → T3.6 → T3.7 → T3.8
 Phase 4 : T4.1 → T4.4 → T4.2 → T4.3 → T4.5
-Phase 5 : T5.1 → T5.2 → T5.4 → T5.3
-Phase 6 : T6.1 → T6.2 → T6.3 → T6.4 → T6.5 → T6.6 → T6.7
+Phase 5 : T5.1 → T5.2 → T5.3 → T5.4 → T5.5 → T5.6 → T5.7
+Phase 6 : T6.1 → T6.2 → T6.4 → T6.3
 ```
 
 ---

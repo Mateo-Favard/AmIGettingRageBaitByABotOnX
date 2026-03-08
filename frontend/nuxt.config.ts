@@ -4,10 +4,12 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   telemetry: false,
 
+  modules: ['@nuxtjs/tailwindcss'],
+
+  css: ['~/assets/css/main.css'],
+
   runtimeConfig: {
-    // Server-only (never exposed to client)
     apiSecret: '',
-    // Public (exposed to client)
     public: {
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
     },
@@ -24,6 +26,14 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'fr',
       },
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+        },
+      ],
     },
   },
 
