@@ -31,9 +31,20 @@
       <!-- Composite score -->
       <div class="rounded-xl border border-zinc-800 bg-zinc-800/50 p-5">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="text-lg font-semibold text-zinc-100">
-            Score de rage bait
-          </h3>
+          <div class="flex items-center gap-1.5">
+            <h3 class="text-lg font-semibold text-zinc-100">
+              Total score
+            </h3>
+            <div class="relative group">
+              <span class="flex items-center justify-center w-4 h-4 rounded-full border border-zinc-600 text-zinc-500 text-[10px] font-bold cursor-default select-none hover:border-zinc-400 hover:text-zinc-300 transition-colors">
+                ?
+              </span>
+              <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-300 leading-relaxed shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 z-10">
+                Score composite pondéré calculé à partir des 4 signaux. Plus il est élevé, plus le compte présente des caractéristiques associées au rage bait opportuniste ou au boting.
+                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-700" />
+              </div>
+            </div>
+          </div>
           <span class="text-2xl font-bold" :class="compositeScoreColor">
             {{ Math.round(state.data.composite_score) }}/100
           </span>

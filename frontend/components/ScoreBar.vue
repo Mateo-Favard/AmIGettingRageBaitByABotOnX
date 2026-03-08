@@ -1,7 +1,18 @@
 <template>
   <div class="w-full">
     <div v-if="label" class="flex justify-between items-center mb-1">
-      <span class="text-sm text-zinc-400">{{ label }}</span>
+      <div class="flex items-center gap-1.5">
+        <span class="text-sm text-zinc-400">{{ label }}</span>
+        <div v-if="tooltip" class="relative group">
+          <span class="flex items-center justify-center w-4 h-4 rounded-full border border-zinc-600 text-zinc-500 text-[10px] font-bold cursor-default select-none hover:border-zinc-400 hover:text-zinc-300 transition-colors">
+            ?
+          </span>
+          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-300 leading-relaxed shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 z-10">
+            {{ tooltip }}
+            <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-700" />
+          </div>
+        </div>
+      </div>
       <span class="text-sm font-medium" :class="scoreTextColor">
         {{ displayScore }}
       </span>
@@ -21,9 +32,11 @@ const props = withDefaults(defineProps<{
   score: number | null
   label?: string
   large?: boolean
+  tooltip?: string
 }>(), {
   label: undefined,
   large: false,
+  tooltip: undefined,
 })
 
 const clampedScore = computed(() => {
