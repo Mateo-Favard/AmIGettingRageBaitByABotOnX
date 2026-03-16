@@ -26,6 +26,7 @@ L'analyse repose sur 4 signaux indépendants combinés en un score composite :
 - **ML** : HuggingFace Transformers + sentence-transformers
 - **DB** : PostgreSQL 16 / Redis 7
 - **Infra** : Docker Compose / GitHub Actions / Traefik
+- **API Externe** : Twitterapi.io
 
 ## Lancer le projet
 
