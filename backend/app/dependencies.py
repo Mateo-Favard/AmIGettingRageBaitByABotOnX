@@ -137,13 +137,15 @@ def _build_analyzers(settings: Settings) -> list:  # type: ignore[type-arg]
     except Exception:
         logger.warning("SentimentAnalyzer not available (model not downloaded?)")
 
-    # AI Content (requires models)
+    # AI Content (multi-strategy sub-pipeline)
     try:
         from app.infrastructure.ml.analyzers.ai_content import (
             AIContentAnalyzer,
         )
 
-        analyzers.append(AIContentAnalyzer(models_path=settings.ml_models_path))
+        analyzers.append(
+            AIContentAnalyzer(models_path=settings.ml_models_path, settings=settings)
+        )
     except Exception:
         logger.warning("AIContentAnalyzer not available (models not downloaded?)")
 

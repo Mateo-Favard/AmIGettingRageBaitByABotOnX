@@ -52,9 +52,14 @@ class Settings(BaseSettings):
     rate_limit_global: str = "100/minute"
 
     # --- ML ---
-    ml_inference_timeout_seconds: int = 120
-    ml_per_analyzer_timeout_seconds: float = 60.0
+    ml_inference_timeout_seconds: int = 300
+    ml_per_analyzer_timeout_seconds: float = 120.0
     ml_models_path: str = "models"
+
+    # --- AI Content sub-strategies ---
+    ai_content_statistical_enabled: bool = True
+    ai_content_cross_tweet_enabled: bool = True
+    ai_content_strategy_timeout_seconds: float = 45.0
 
     @model_validator(mode="after")
     def validate_no_debug_in_production(self) -> "Settings":

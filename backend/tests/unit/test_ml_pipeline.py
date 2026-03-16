@@ -39,7 +39,7 @@ TWEETS = [
     for i in range(10)
 ]
 
-INPUT = AnalysisInput(profile=PROFILE, tweets=TWEETS, following=["a", "b", "c"])
+INPUT = AnalysisInput(profile=PROFILE, tweets=TWEETS, trends=["a", "b", "c"])
 
 
 # --- Fake analyzers ---
