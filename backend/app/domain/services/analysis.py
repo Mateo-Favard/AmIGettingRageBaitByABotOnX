@@ -95,9 +95,7 @@ class AnalysisService:
             logger.warning("Could not fetch trends")
             trends = []
 
-        analysis_input = AnalysisInput(
-            profile=profile, tweets=tweets, trends=trends
-        )
+        analysis_input = AnalysisInput(profile=profile, tweets=tweets, trends=trends)
 
         try:
             pipeline_result = await self._ml_pipeline.run(analysis_input)
@@ -105,13 +103,14 @@ class AnalysisService:
             logger.exception("ML pipeline failed for %s, using placeholder")
             return _build_placeholder_result(account_id, handle, profile)
 
-        return _map_pipeline_result(account_id, handle, pipeline_result)
+        return _map_pipeline_result(account_id, handle, pipeline_result, len(tweets))
 
 
 def _map_pipeline_result(
     account_id: uuid.UUID,
     handle: str,
     pr: PipelineResult,
+    tweets_analyzed: int = 0,
 ) -> AnalysisResultData:
     """Convert PipelineResult to AnalysisResultData."""
     now = datetime.now(tz=UTC)
@@ -126,6 +125,7 @@ def _map_pipeline_result(
         opportunism_score=pr.individual_scores.get("opportunism"),
         details={
             "method": "ml_pipeline",
+            "tweets_analyzed": tweets_analyzed,
             "failed_analyzers": pr.failed_analyzers,
             **{k: dict(v) for k, v in pr.details.items()},
         },

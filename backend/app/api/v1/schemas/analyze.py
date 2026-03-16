@@ -58,3 +58,4 @@ class AnalyzeResponse(BaseModel):
     profile: ProfileSummary
     analyzed_at: datetime
     cached: bool
+    tweets_analyzed: int = 0
