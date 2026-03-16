@@ -31,6 +31,8 @@ async def analyze_account(
     else:
         profile = await service._twitter.fetch_profile(handle)
 
+    tweets_analyzed = result.details.get("tweets_analyzed", 0) if result.details else 0
+
     return AnalyzeResponse(
         handle=result.handle,
         composite_score=result.composite_score,
@@ -52,4 +54,5 @@ async def analyze_account(
         ),
         analyzed_at=result.analyzed_at,
         cached=cached,
+        tweets_analyzed=int(tweets_analyzed),
     )

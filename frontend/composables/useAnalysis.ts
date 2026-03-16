@@ -23,6 +23,7 @@ export interface AnalyzeResponse {
   profile: ProfileSummary
   analyzed_at: string
   cached: boolean
+  tweets_analyzed: number
 }
 
 export interface AnalysisState {

@@ -59,8 +59,14 @@
         class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3
                text-sm text-zinc-500"
       >
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4 flex-wrap">
           <span>Analyse du {{ formatDate(state.data.analyzed_at) }}</span>
+          <span
+            v-if="state.data.tweets_analyzed"
+            class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-400 border border-zinc-700"
+          >
+            {{ state.data.tweets_analyzed }} tweets analysés
+          </span>
           <span
             v-if="state.data.cached"
             class="px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-400 border border-zinc-700"
