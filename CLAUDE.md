@@ -32,7 +32,7 @@ App web publique qui analyse un compte Twitter/X et calcule un score de probabil
 - **Backend** : Python 3.12+ / FastAPI / SQLAlchemy async / Alembic
 - **Frontend** : Vue 3 / Nuxt 3 (SSR)
 - **DB** : PostgreSQL 16 / Redis 7
-- **ML** : HuggingFace Transformers (modèles pré-entraînés francophones)
+- **ML** : HuggingFace Transformers (modèles pré-entraînés francophones) + sentence-transformers
 - **Infra** : Docker Compose / GitHub Actions / Traefik
 
 ## Conventions

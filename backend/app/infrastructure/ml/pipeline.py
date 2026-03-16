@@ -93,16 +93,32 @@ class MLPipeline:
                 model_versions={},
             )
 
-        tasks = [self._run_analyzer(a, data) for a in self._analyzers]
+        tasks = [
+            asyncio.ensure_future(self._run_analyzer(a, data)) for a in self._analyzers
+        ]
 
-        try:
-            results = await asyncio.wait_for(
-                asyncio.gather(*tasks),
-                timeout=self._global_timeout,
+        done, pending = await asyncio.wait(tasks, timeout=self._global_timeout)
+
+        if pending:
+            logger.warning(
+                "Global pipeline timeout after %.1fs — %d analyzers still running",
+                self._global_timeout,
+                len(pending),
             )
-        except TimeoutError:
-            logger.warning("Global pipeline timeout after %.1fs", self._global_timeout)
-            results = [(a.name, None) for a in self._analyzers]
+            for task in pending:
+                task.cancel()
+
+        # Collect results: completed tasks return their result,
+        # timed-out tasks are marked as failed
+        results: list[tuple[str, AnalyzerResult | None]] = []
+        for task in tasks:
+            if task in done and not task.cancelled():
+                try:
+                    results.append(task.result())
+                except Exception:
+                    results.append((self._analyzers[tasks.index(task)].name, None))
+            else:
+                results.append((self._analyzers[tasks.index(task)].name, None))
 
         individual_scores: dict[str, float] = {}
         confidences: dict[str, float] = {}

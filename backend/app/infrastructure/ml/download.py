@@ -30,10 +30,16 @@ MODEL_REGISTRY: list[ModelSpec] = [
         repo_id="almanach/camemberta-chatgptdetect-noisy",
     ),
     ModelSpec(
+        repo_id="Hello-SimpleAI/chatgpt-detector-roberta",
+    ),
+    ModelSpec(
         repo_id="cardiffnlp/camembert-base-tweet-sentiment-fr",
     ),
     ModelSpec(
         repo_id="mazancourt/politics-sentence-classifier",
+    ),
+    ModelSpec(
+        repo_id="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
     ),
 ]
 

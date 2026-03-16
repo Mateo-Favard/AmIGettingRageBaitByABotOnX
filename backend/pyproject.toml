@@ -21,6 +21,7 @@ dependencies = [
     "torch>=2.2,<3",
     "sentencepiece>=0.2,<1",
     "safetensors>=0.4,<1",
+    "sentence-transformers>=3.0,<4",
     "huggingface-hub>=0.23,<1",
     "gunicorn>=23.0,<24",
 ]
